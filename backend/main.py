@@ -1,12 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
-app = FastAPI(
-    title="SRV — Sistema de Retroalimentación por Voz",
-    description="API para análisis de fluidez oral con IA (UPAO Taller Integrador 1)",
-    version="0.1.0",
-)
+app = FastAPI()
 
+# Configuración de CORS para que React pueda enviar datos
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,7 +12,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@app.get("/")
-def health():
-    return {"proyecto": "SRV - Sistema de Retroalimentación por Voz", "estado": "Activo"}
+@app.post("/analizar-fluidez")
+async def analizar_fluidez(file: UploadFile = File(...)):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+    
+    # Aquí es donde entrará Whisper más adelante
+    return {
+        "mensaje": "¡Audio recibido!",
+        "nombre_archivo": file.filename,
+        "status": "procesando"
+    }
