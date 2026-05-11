@@ -164,3 +164,7 @@ backend/models/
 
 # Audio uploads del backend
 backend/uploads/
+
+# SQLite local dev DB
+*.db
+*.sqlite

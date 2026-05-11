@@ -12,7 +12,7 @@ WHISPER_MODEL_LIVE   = os.getenv("WHISPER_MODEL_LIVE", "small")    # chunks en v
 WHISPER_MODEL_FINAL  = os.getenv("WHISPER_MODEL_FINAL", "medium")  # análisis final
 
 # ── Base de datos ─────────────────────────────────────────────────────────────
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/srv_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./srv_dev.db")
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 JWT_SECRET         = os.getenv("JWT_SECRET", "dev_secret_cambia_esto_en_produccion")
