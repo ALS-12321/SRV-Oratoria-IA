@@ -15,7 +15,7 @@ def transcribe(audio_path: str, model: WhisperModel) -> tuple[list[WordToken], s
     for segment in segments:
         if segment.words:
             for w in segment.words:
-                words.append(WordToken(word=w.word.strip(), start=w.start, end=w.end))
+                words.append(WordToken(word=w.word.strip(), start=float(w.start), end=float(w.end)))
     transcript = " ".join(w.word for w in words)
     return words, transcript
 
