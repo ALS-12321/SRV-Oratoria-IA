@@ -38,7 +38,7 @@ numpy==2.4.4
 
 # ── Utilidades ─────────────────────────────────────────────────────────────────
 python-dotenv==1.1.0
-huggingface_hub==1.13.0
+huggingface_hub==0.34.4   # <1.0 por compatibilidad con transformers
 
 # ── Validación D1 (solo desarrollo) ───────────────────────────────────────────
 gtts==2.5.4                 # Generar audio de prueba en español
