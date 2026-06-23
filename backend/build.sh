@@ -7,6 +7,16 @@ pip install -r requirements-prod.txt
 echo "==> Descargando modelo spaCy (es_core_news_lg)..."
 python -m spacy download es_core_news_lg
 
+echo "==> Pre-descargando modelo BETO (coherencia semantica D2)..."
+python - <<'EOF'
+from transformers import AutoTokenizer, AutoModel
+_id = "dccuchile/bert-base-spanish-wwm-cased"
+print(f"    Descargando BETO '{_id}'...")
+AutoTokenizer.from_pretrained(_id)
+AutoModel.from_pretrained(_id)
+print("    BETO listo.")
+EOF
+
 echo "==> Pre-descargando modelos Whisper (esto puede tardar unos minutos)..."
 python - <<'EOF'
 import os
