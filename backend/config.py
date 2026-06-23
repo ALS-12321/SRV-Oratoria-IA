@@ -9,7 +9,7 @@ load_dotenv()
 WHISPER_DEVICE       = os.getenv("WHISPER_DEVICE", "cpu")
 WHISPER_COMPUTE_TYPE = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
 WHISPER_MODEL_LIVE   = os.getenv("WHISPER_MODEL_LIVE", "small")
-WHISPER_MODEL_FINAL  = os.getenv("WHISPER_MODEL_FINAL", "small")  # default alineado con build.sh
+WHISPER_MODEL_FINAL  = os.getenv("WHISPER_MODEL_FINAL", "medium")  # plan Hobby 8GB; alineado con build.sh
 
 # ── Base de datos ─────────────────────────────────────────────────────────────
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./srv_dev.db")

@@ -1,6 +1,6 @@
 """
 Carga lazy (singleton) de los modelos NLP para la Dimensión 2:
-  · spaCy es_core_news_sm  → tokenización, lematización, POS
+  · spaCy es_core_news_lg  → tokenización, lematización, POS
   · BETO (bert-base-spanish-wwm-cased) → embeddings para coherencia semántica
 
 Los modelos se cargan una sola vez y se reutilizan. Si la carga falla
@@ -14,7 +14,7 @@ import os
 _BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _BETO_LOCAL  = os.path.join(_BACKEND_DIR, "models_cache", "beto")
 _BETO_HF_ID  = "dccuchile/bert-base-spanish-wwm-cased"
-_SPACY_MODEL = "es_core_news_sm"
+_SPACY_MODEL = "es_core_news_lg"
 
 _nlp = None            # spaCy pipeline
 _beto_tok = None       # BETO tokenizer
