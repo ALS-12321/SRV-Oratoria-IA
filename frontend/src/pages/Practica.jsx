@@ -3,17 +3,14 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import WaveSurfer from 'wavesurfer.js'
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.js'
 import api from '../api'
+import { T } from '../ui/theme'
+import { Lorito } from '../ui/kit'
 
-const C = {
-  bg: '#0f172a', card: '#1e293b', border: '#334155', text: '#f1f5f9', muted: '#94a3b8',
-  blue: '#6366f1', green: '#22c55e', greenBg: '#14532d', yellow: '#facc15', yellowBg: '#713f12',
-  red: '#f87171', redBg: '#7f1d1d', purple: '#a78bfa', purpleBg: '#2e1065',
-  orange: '#fb923c', orangeBg: '#7c2d12',
-}
+/* Paleta de estado clara (verde/amarillo/rojo que devuelve el backend) */
 const THEME = {
-  green:  { bg: C.greenBg,  border: C.green,  text: C.green },
-  yellow: { bg: C.yellowBg, border: C.yellow, text: C.yellow },
-  red:    { bg: C.redBg,    border: C.red,    text: C.red },
+  green:  { bg: '#e8f7ef', border: T.verde,   text: T.verdeD },
+  yellow: { bg: '#fff5d6', border: T.amarillo, text: '#9a7400' },
+  red:    { bg: '#fdecec', border: T.coral,   text: T.err },
 }
 
 function hablar(texto) {
@@ -26,9 +23,9 @@ function hablar(texto) {
 
 function Estrellas({ n, color }) {
   return (
-    <div style={{ fontSize: '30px', letterSpacing: '4px', margin: '6px 0' }}>
-      {[1,2,3,4,5].map(i => (
-        <span key={i} style={{ opacity: i <= n ? 1 : 0.2, color: color || C.yellow }}>★</span>
+    <div style={{ fontSize: '32px', letterSpacing: '4px', margin: '6px 0', lineHeight: 1 }}>
+      {[1, 2, 3, 4, 5].map(i => (
+        <span key={i} style={{ color: i <= n ? (color || T.amarillo) : '#e8e0cf' }}>★</span>
       ))}
     </div>
   )
@@ -38,15 +35,15 @@ function BarraVelocidad({ ppm }) {
   const pct = Math.min(100, Math.max(0, ((ppm - 40) / 140) * 100))
   const zonaOkLeft  = ((80 - 40) / 140) * 100
   const zonaOkWidth = (40 / 140) * 100
-  const color = ppm >= 80 && ppm <= 120 ? C.green : ppm > 120 ? C.red : C.yellow
+  const color = ppm >= 80 && ppm <= 120 ? T.verde : ppm > 120 ? T.coral : T.amarillo
   return (
     <div style={{ margin: '10px 0' }}>
-      <div style={{ position: 'relative', height: '24px', borderRadius: '999px', backgroundColor: '#1e293b', border: `1px solid ${C.border}`, overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: `${zonaOkLeft}%`, width: `${zonaOkWidth}%`, height: '100%', backgroundColor: '#14532d', opacity: 0.6 }} />
+      <div style={{ position: 'relative', height: '24px', borderRadius: '999px', backgroundColor: '#f4eede', border: `1px solid ${T.borde}`, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', left: `${zonaOkLeft}%`, width: `${zonaOkWidth}%`, height: '100%', backgroundColor: '#d9f7e6' }} />
         <div style={{ position: 'absolute', left: `${pct}%`, transform: 'translateX(-50%)', top: '2px', bottom: '2px', width: '6px', borderRadius: '999px', backgroundColor: color, boxShadow: `0 0 8px ${color}` }} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: C.muted, marginTop: '3px' }}>
-        <span>Muy lento</span><span style={{ color: C.green }}>Ideal: 80-120 PPM</span><span>Muy rapido</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: T.suave, marginTop: '3px' }}>
+        <span>Muy lento</span><span style={{ color: T.verde, fontWeight: 700 }}>Ideal: 80-120 PPM</span><span>Muy rapido</span>
       </div>
     </div>
   )
@@ -55,18 +52,18 @@ function BarraVelocidad({ ppm }) {
 function ScoreBar({ score, color }) {
   return (
     <div style={{ margin: '6px 0 10px' }}>
-      <div style={{ height: '8px', borderRadius: '999px', backgroundColor: C.border, overflow: 'hidden' }}>
+      <div style={{ height: '10px', borderRadius: '999px', backgroundColor: '#f4eede', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${score}%`, borderRadius: '999px', backgroundColor: color }} />
       </div>
-      <p style={{ fontSize: '11px', color: C.muted, margin: '2px 0 0', textAlign: 'right' }}>{score} / 100 pts</p>
+      <p style={{ fontSize: '11px', color: T.suave, margin: '2px 0 0', textAlign: 'right' }}>{score} / 100 pts</p>
     </div>
   )
 }
 
 function Tarjeta({ titulo, accentColor, children }) {
   return (
-    <div style={{ backgroundColor: C.card, border: `1px solid ${accentColor || C.border}`, borderRadius: '12px', padding: '16px 18px', marginBottom: '12px', textAlign: 'left' }}>
-      <p style={{ margin: '0 0 10px', fontWeight: 'bold', color: accentColor || C.text, fontSize: '13px' }}>{titulo}</p>
+    <div style={{ background: '#fff', border: `2px solid ${accentColor ? accentColor + '40' : T.borde}`, borderRadius: 20, padding: '18px 20px', marginBottom: 14, textAlign: 'left', boxShadow: T.sombra }}>
+      {titulo && <p style={{ margin: '0 0 12px', fontWeight: 800, color: accentColor || T.texto, fontSize: 15, fontFamily: "'Baloo 2', sans-serif" }}>{titulo}</p>}
       {children}
     </div>
   )
@@ -74,9 +71,9 @@ function Tarjeta({ titulo, accentColor, children }) {
 
 function Fila({ label, valor, color }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: `1px solid ${C.border}` }}>
-      <span style={{ fontSize: '12px', color: C.muted }}>{label}</span>
-      <span style={{ fontSize: '12px', fontWeight: 'bold', color: color || C.text }}>{valor}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: `1px solid ${T.borde}` }}>
+      <span style={{ fontSize: '13px', color: T.suave }}>{label}</span>
+      <span style={{ fontSize: '13px', fontWeight: 800, color: color || T.texto }}>{valor}</span>
     </div>
   )
 }
@@ -87,20 +84,20 @@ function ScoreGlobal({ data }) {
   const t = THEME[sg.color] || THEME.green
   const d = sg.scores_por_dimension
   return (
-    <div style={{ backgroundColor: t.bg, border: `2px solid ${t.border}`, borderRadius: '16px', padding: '22px 20px', marginBottom: '14px', textAlign: 'center' }}>
-      <p style={{ margin: '0 0 2px', fontSize: '11px', color: t.text, textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '1px' }}>Resultado Final</p>
-      <p style={{ fontSize: '52px', fontWeight: 'bold', color: t.text, margin: '4px 0 0', lineHeight: 1 }}>{sg.score_global}</p>
-      <p style={{ fontSize: '12px', color: t.text, margin: '2px 0 6px', opacity: 0.8 }}>puntos de 100</p>
-      <Estrellas n={sg.estrellas} color={t.text} />
-      <p style={{ fontSize: '18px', fontWeight: 'bold', color: t.text, margin: '6px 0 4px' }}>{sg.nivel}</p>
-      <p style={{ fontSize: '14px', color: t.text, margin: 0 }}>{sg.mensaje}</p>
-      <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-        {[['D1 Fluidez', d.d1, C.blue], ['D2 Vocabulario', d.d2, C.purple], ['D3 Expresividad', d.d3, C.orange]].map(([lbl, val, col]) => (
-          <div key={lbl} style={{ backgroundColor: 'rgba(0,0,0,0.25)', borderRadius: '8px', padding: '10px 6px' }}>
-            <p style={{ fontSize: '10px', color: t.text, margin: '0 0 4px', opacity: 0.8 }}>{lbl}</p>
-            <p style={{ fontSize: '22px', fontWeight: 'bold', color: col, margin: '0 0 4px' }}>{val}</p>
-            <div style={{ height: '4px', borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.1)' }}>
-              <div style={{ height: '100%', width: `${val}%`, borderRadius: '2px', backgroundColor: col }} />
+    <div style={{ background: t.bg, border: `3px solid ${t.border}`, borderRadius: 24, padding: '24px 20px', marginBottom: 16, textAlign: 'center', boxShadow: T.sombra }}>
+      <p style={{ margin: '0 0 2px', fontSize: 12, color: t.text, textTransform: 'uppercase', fontWeight: 800, letterSpacing: 1 }}>Tu resultado</p>
+      <p style={{ fontSize: 60, fontWeight: 800, color: t.text, margin: '4px 0 0', lineHeight: 1, fontFamily: "'Baloo 2', sans-serif" }}>{sg.score_global}</p>
+      <p style={{ fontSize: 12, color: t.text, margin: '2px 0 6px', opacity: 0.8 }}>puntos de 100</p>
+      <Estrellas n={sg.estrellas} color={t.border} />
+      <p style={{ fontSize: 20, fontWeight: 800, color: t.text, margin: '6px 0 4px', fontFamily: "'Baloo 2', sans-serif" }}>{sg.nivel}</p>
+      <p style={{ fontSize: 15, color: t.text, margin: 0 }}>{sg.mensaje}</p>
+      <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+        {[['Fluidez', d.d1, T.d1], ['Vocabulario', d.d2, T.d2], ['Expresividad', d.d3, T.d3]].map(([lbl, val, col]) => (
+          <div key={lbl} style={{ background: '#fff', borderRadius: 14, padding: '12px 6px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+            <p style={{ fontSize: 10, color: T.suave, margin: '0 0 4px', fontWeight: 700 }}>{lbl}</p>
+            <p style={{ fontSize: 24, fontWeight: 800, color: col, margin: '0 0 4px', fontFamily: "'Baloo 2', sans-serif" }}>{val}</p>
+            <div style={{ height: 5, borderRadius: 3, backgroundColor: '#f0e9da' }}>
+              <div style={{ height: '100%', width: `${val}%`, borderRadius: 3, backgroundColor: col }} />
             </div>
           </div>
         ))}
@@ -113,18 +110,18 @@ function ScoreGlobal({ data }) {
 function DatosTecnicos({ rows, accentColor }) {
   const [open, setOpen] = useState(false)
   return (
-    <div style={{ marginTop: '12px' }}>
+    <div style={{ marginTop: 12 }}>
       <button onClick={() => setOpen(v => !v)}
-        style={{ width: '100%', padding: '7px 12px', borderRadius: '8px', border: `1px solid ${C.border}`, backgroundColor: 'rgba(0,0,0,0.2)', color: C.muted, cursor: 'pointer', fontSize: '11px', textAlign: 'left' }}>
+        style={{ width: '100%', padding: '9px 14px', borderRadius: 12, border: `2px solid ${T.borde}`, background: '#fbf7ee', color: T.suave, cursor: 'pointer', fontSize: 12, fontWeight: 700, textAlign: 'left' }}>
         {open ? '▲' : '▼'} Datos tecnicos (para el docente)
       </button>
       {open && (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', color: C.text, marginTop: '6px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, color: T.texto, marginTop: 6 }}>
           <tbody>
             {rows.map(([k, v]) => (
-              <tr key={k} style={{ borderBottom: `1px solid ${C.border}` }}>
-                <td style={{ padding: '4px 8px', color: C.muted }}>{k}</td>
-                <td style={{ padding: '4px 8px', fontWeight: '500', textAlign: 'right', color: accentColor || C.text }}>{v}</td>
+              <tr key={k} style={{ borderBottom: `1px solid ${T.borde}` }}>
+                <td style={{ padding: '5px 8px', color: T.suave }}>{k}</td>
+                <td style={{ padding: '5px 8px', fontWeight: 600, textAlign: 'right', color: accentColor || T.texto }}>{v}</td>
               </tr>
             ))}
           </tbody>
@@ -148,49 +145,44 @@ function SeccionD1({ data }) {
     ['Pausa promedio', data.pausas.avg_pause_s != null ? `${data.pausas.avg_pause_s}s` : 'N/A'],
   ]
   return (
-    <Tarjeta titulo="D1 — Fluidez oral" accentColor={C.blue}>
-      {/* Encabezado con estrellas */}
-      <div style={{ backgroundColor: t.bg, border: `1px solid ${t.border}`, borderRadius: '10px', padding: '12px', marginBottom: '14px', textAlign: 'center' }}>
-        <p style={{ fontSize: '16px', fontWeight: 'bold', color: t.text, margin: 0 }}>{fb.mensaje_principal}</p>
-        <Estrellas n={fb.estrellas} color={t.text} />
+    <Tarjeta titulo="🗣️ Fluidez al hablar" accentColor={T.d1}>
+      <div style={{ background: t.bg, border: `2px solid ${t.border}`, borderRadius: 14, padding: 14, marginBottom: 14, textAlign: 'center' }}>
+        <p style={{ fontSize: 17, fontWeight: 800, color: t.text, margin: 0 }}>{fb.mensaje_principal}</p>
+        <Estrellas n={fb.estrellas} color={t.border} />
         <button onClick={() => hablar(ttsTexto)}
-          style={{ marginTop: '2px', padding: '5px 14px', borderRadius: '999px', border: `1px solid ${t.border}`, backgroundColor: 'transparent', color: t.text, cursor: 'pointer', fontSize: '12px' }}>
+          style={{ marginTop: 2, padding: '7px 16px', borderRadius: 999, border: `2px solid ${t.border}`, background: '#fff', color: t.text, cursor: 'pointer', fontSize: 13, fontWeight: 700 }}>
           🔊 Escuchar resultado
         </button>
       </div>
 
-      {/* Velocidad de habla */}
-      <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: 'bold', color: C.text }}>Velocidad de habla</p>
+      <p style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 800, color: T.texto }}>Velocidad de habla</p>
       <BarraVelocidad ppm={data.ppm.ppm} />
-      <Fila label="Palabras por minuto" valor={`${data.ppm.ppm} PPM`} color={data.ppm.ppm >= 80 && data.ppm.ppm <= 120 ? C.green : C.yellow} />
-      <p style={{ margin: '8px 0 14px', color: C.muted, fontSize: '13px' }}>{fb.detalle_velocidad}</p>
+      <Fila label="Palabras por minuto" valor={`${data.ppm.ppm} PPM`} color={data.ppm.ppm >= 80 && data.ppm.ppm <= 120 ? T.verde : T.amarillo} />
+      <p style={{ margin: '8px 0 14px', color: T.suave, fontSize: 14 }}>{fb.detalle_velocidad}</p>
 
-      {/* Bloqueos */}
-      <p style={{ margin: '0 0 6px', fontSize: '12px', fontWeight: 'bold', color: C.text }}>Bloqueos</p>
-      <div style={{ display: 'flex', gap: '20px', margin: '4px 0 10px' }}>
+      <p style={{ margin: '0 0 6px', fontSize: 13, fontWeight: 800, color: T.texto }}>Bloqueos</p>
+      <div style={{ display: 'flex', gap: 20, margin: '4px 0 10px' }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '40px', fontWeight: 'bold', margin: 0, color: data.pausas.long_pauses === 0 ? C.green : C.red }}>{data.pausas.long_pauses}</p>
-          <p style={{ fontSize: '11px', color: C.muted, margin: 0 }}>bloqueos</p>
+          <p style={{ fontSize: 40, fontWeight: 800, margin: 0, color: data.pausas.long_pauses === 0 ? T.verde : T.coral, fontFamily: "'Baloo 2', sans-serif" }}>{data.pausas.long_pauses}</p>
+          <p style={{ fontSize: 11, color: T.suave, margin: 0 }}>bloqueos</p>
         </div>
       </div>
-      <p style={{ margin: '0 0 14px', color: C.muted, fontSize: '13px' }}>{fb.detalle_pausas}</p>
+      <p style={{ margin: '0 0 14px', color: T.suave, fontSize: 14 }}>{fb.detalle_pausas}</p>
 
-      {/* Volumen */}
-      <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: 'bold', color: C.text }}>Volumen</p>
+      <p style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 800, color: T.texto }}>Volumen</p>
       <Fila label="Volumen de voz" valor={data.prosodia?.intensity_mean_db != null ? `${data.prosodia.intensity_mean_db} dB` : 'N/A'} />
-      {data.d3?.detalle_volumen && <p style={{ margin: '8px 0 0', color: C.muted, fontSize: '13px' }}>{data.d3.detalle_volumen}</p>}
+      {data.d3?.detalle_volumen && <p style={{ margin: '8px 0 0', color: T.suave, fontSize: 14 }}>{data.d3.detalle_volumen}</p>}
 
-      <DatosTecnicos rows={tecnico} accentColor={C.blue} />
+      <DatosTecnicos rows={tecnico} accentColor={T.d1} />
     </Tarjeta>
   )
 }
 
 /* ── D2 ───────────────────────────────────────────────────────────────────── */
 function SeccionD2({ d2 }) {
-  const colMul = d2.muletillas_count === 0 ? C.green : d2.muletillas_count <= 3 ? C.yellow : C.red
-  const colTTR = d2.ttr_score > 0.5 ? C.green : d2.ttr_score > 0.3 ? C.yellow : C.red
-  // El color de coherencia usa el nivel cualitativo del backend (BETO da rango alto)
-  const colCoh = d2.coherencia_nivel === 'bueno' ? C.green : d2.coherencia_nivel === 'regular' ? C.yellow : C.red
+  const colMul = d2.muletillas_count === 0 ? T.verde : d2.muletillas_count <= 3 ? T.amarillo : T.coral
+  const colTTR = d2.ttr_score > 0.5 ? T.verde : d2.ttr_score > 0.3 ? T.amarillo : T.coral
+  const colCoh = d2.coherencia_nivel === 'bueno' ? T.verde : d2.coherencia_nivel === 'regular' ? T.amarillo : T.coral
   const tecnico = [
     ['Palabras de contenido', d2.word_count_d2],
     ['Palabras unicas', d2.unique_words],
@@ -204,32 +196,32 @@ function SeccionD2({ d2 }) {
     for (const [tipo, n] of Object.entries(d2.por_tipo)) tecnico.push([`  · "${tipo}"`, n])
   }
   return (
-    <Tarjeta titulo="D2 — Vocabulario y coherencia" accentColor={C.purple}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+    <Tarjeta titulo="📚 Vocabulario y coherencia" accentColor={T.d2}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         {[
           ['Muletillas', d2.muletillas_count, '', colMul],
           ['Variedad',   `${Math.round(d2.ttr_score * 100)}%`, 'TTR', colTTR],
           ['Coherencia', d2.coherencia_nivel || '—', '', colCoh],
         ].map(([lbl, val, sub, col]) => (
-          <div key={lbl} style={{ flex: 1, textAlign: 'center', backgroundColor: 'rgba(167,139,250,0.08)', borderRadius: '8px', padding: '10px 4px' }}>
-            <p style={{ fontSize: '26px', fontWeight: 'bold', margin: 0, color: col }}>{val}</p>
-            {sub && <p style={{ fontSize: '9px', color: C.muted, margin: 0 }}>{sub}</p>}
-            <p style={{ fontSize: '11px', color: C.muted, margin: '2px 0 0' }}>{lbl}</p>
+          <div key={lbl} style={{ flex: 1, textAlign: 'center', background: '#f6f1ff', borderRadius: 12, padding: '12px 4px' }}>
+            <p style={{ fontSize: 26, fontWeight: 800, margin: 0, color: col, fontFamily: "'Baloo 2', sans-serif" }}>{val}</p>
+            {sub && <p style={{ fontSize: 9, color: T.suave, margin: 0 }}>{sub}</p>}
+            <p style={{ fontSize: 11, color: T.suave, margin: '2px 0 0' }}>{lbl}</p>
           </div>
         ))}
       </div>
-      <ScoreBar score={d2.score_d2} color={C.purple} />
-      <p style={{ margin: '4px 0', color: C.muted, fontSize: '12px' }}>{d2.detalle_muletillas}</p>
-      <p style={{ margin: '4px 0', color: C.muted, fontSize: '12px' }}>{d2.detalle_vocabulario}</p>
-      <p style={{ margin: '4px 0', color: C.muted, fontSize: '12px' }}>{d2.detalle_coherencia}</p>
+      <ScoreBar score={d2.score_d2} color={T.d2} />
+      <p style={{ margin: '4px 0', color: T.suave, fontSize: 13 }}>{d2.detalle_muletillas}</p>
+      <p style={{ margin: '4px 0', color: T.suave, fontSize: 13 }}>{d2.detalle_vocabulario}</p>
+      <p style={{ margin: '4px 0', color: T.suave, fontSize: 13 }}>{d2.detalle_coherencia}</p>
       {d2.muletillas_list?.length > 0 && (
-        <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+        <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
           {d2.muletillas_list.map(m => (
-            <span key={m} style={{ padding: '2px 10px', borderRadius: '999px', backgroundColor: 'rgba(251,146,60,0.15)', border: `1px solid ${C.orange}`, color: C.orange, fontSize: '11px' }}>{m}</span>
+            <span key={m} style={{ padding: '3px 12px', borderRadius: 999, background: '#fff0e6', border: `1.5px solid ${T.naranja}`, color: T.naranja, fontSize: 12, fontWeight: 700 }}>{m}</span>
           ))}
         </div>
       )}
-      <DatosTecnicos rows={tecnico} accentColor={C.purple} />
+      <DatosTecnicos rows={tecnico} accentColor={T.d2} />
     </Tarjeta>
   )
 }
@@ -246,23 +238,23 @@ function SeccionD3({ d3, prosodia }) {
     ['Intensidad (volumen)', p.intensity_mean_db != null ? `${p.intensity_mean_db} dB` : 'N/A'],
   ]
   return (
-    <Tarjeta titulo="D3 — Expresividad vocal" accentColor={C.orange}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+    <Tarjeta titulo="🎵 Expresividad de la voz" accentColor={T.d3}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         {[
-          ['Variacion tono', d3.breakdown.variacion_tonal_pts, 40, C.orange],
-          ['Calidad voz',    d3.breakdown.calidad_hnr_pts,     30, C.yellow],
+          ['Variacion tono', d3.breakdown.variacion_tonal_pts, 40, T.naranja],
+          ['Calidad voz',    d3.breakdown.calidad_hnr_pts,     30, T.amarillo],
         ].map(([lbl, val, max, col]) => (
-          <div key={lbl} style={{ flex: 1, textAlign: 'center', backgroundColor: 'rgba(251,146,60,0.08)', borderRadius: '8px', padding: '10px 4px' }}>
-            <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: col }}>{val}</p>
-            <p style={{ fontSize: '9px', color: C.muted, margin: 0 }}>/{max} pts</p>
-            <p style={{ fontSize: '11px', color: C.muted, margin: '2px 0 0' }}>{lbl}</p>
+          <div key={lbl} style={{ flex: 1, textAlign: 'center', background: '#fff3e6', borderRadius: 12, padding: '12px 4px' }}>
+            <p style={{ fontSize: 24, fontWeight: 800, margin: 0, color: col, fontFamily: "'Baloo 2', sans-serif" }}>{val}</p>
+            <p style={{ fontSize: 9, color: T.suave, margin: 0 }}>/{max} pts</p>
+            <p style={{ fontSize: 11, color: T.suave, margin: '2px 0 0' }}>{lbl}</p>
           </div>
         ))}
       </div>
-      <ScoreBar score={d3.score_d3} color={C.orange} />
-      <p style={{ margin: '4px 0', color: C.muted, fontSize: '12px' }}>{d3.detalle_tono}</p>
-      <p style={{ margin: '4px 0', color: C.muted, fontSize: '12px' }}>{d3.detalle_calidad}</p>
-      <DatosTecnicos rows={tecnico} accentColor={C.orange} />
+      <ScoreBar score={d3.score_d3} color={T.d3} />
+      <p style={{ margin: '4px 0', color: T.suave, fontSize: 13 }}>{d3.detalle_tono}</p>
+      <p style={{ margin: '4px 0', color: T.suave, fontSize: 13 }}>{d3.detalle_calidad}</p>
+      <DatosTecnicos rows={tecnico} accentColor={T.d3} />
     </Tarjeta>
   )
 }
@@ -270,16 +262,19 @@ function SeccionD3({ d3, prosodia }) {
 /* ── Resultados completos ─────────────────────────────────────────────────── */
 function Resultados({ data }) {
   const todosConsejos = [...(data.retroalimentacion?.consejos || []), ...(data.d2?.consejos || [])]
+  const colorLec = data.lectura
+    ? (data.lectura.fidelidad_score >= 70 ? T.verde : data.lectura.fidelidad_score >= 50 ? T.amarillo : T.coral)
+    : T.verde
   return (
-    <div style={{ maxWidth: '680px', margin: '18px auto', textAlign: 'center' }}>
+    <div style={{ maxWidth: 680, margin: '18px auto', textAlign: 'center' }}>
       <ScoreGlobal data={data} />
       {data.lectura && (
-        <Tarjeta titulo="Modo lectura — Fidelidad" accentColor={data.lectura.fidelidad_score >= 70 ? C.green : data.lectura.fidelidad_score >= 50 ? C.yellow : C.red}>
+        <Tarjeta titulo="📖 Lectura — Fidelidad" accentColor={colorLec}>
           <div style={{ textAlign: 'center', margin: '4px 0 8px' }}>
-            <p style={{ fontSize: '44px', fontWeight: 'bold', margin: 0, lineHeight: 1, color: data.lectura.fidelidad_score >= 70 ? C.green : data.lectura.fidelidad_score >= 50 ? C.yellow : C.red }}>{data.lectura.fidelidad_score}%</p>
-            <p style={{ fontSize: '11px', color: C.muted, margin: '2px 0 0' }}>coincidencia con el texto</p>
+            <p style={{ fontSize: 46, fontWeight: 800, margin: 0, lineHeight: 1, color: colorLec, fontFamily: "'Baloo 2', sans-serif" }}>{data.lectura.fidelidad_score}%</p>
+            <p style={{ fontSize: 11, color: T.suave, margin: '2px 0 0' }}>coincidencia con el texto</p>
           </div>
-          <p style={{ margin: '4px 0 8px', color: C.muted, fontSize: '13px' }}>{data.lectura.mensaje}</p>
+          <p style={{ margin: '4px 0 8px', color: T.suave, fontSize: 14 }}>{data.lectura.mensaje}</p>
           <Fila label="Palabras del texto" valor={data.lectura.palabras_texto} />
           <Fila label="Palabras leidas"  valor={data.lectura.palabras_leidas} />
         </Tarjeta>
@@ -288,13 +283,13 @@ function Resultados({ data }) {
       <SeccionD2 d2={data.d2} />
       <SeccionD3 d3={data.d3} prosodia={data.prosodia} />
       {todosConsejos.length > 0 && (
-        <div style={{ backgroundColor: '#1e3a5f', border: '1px solid #2563eb', borderRadius: '12px', padding: '14px 18px', marginBottom: '12px', textAlign: 'left' }}>
-          <p style={{ margin: '0 0 6px', fontWeight: 'bold', color: '#93c5fd', fontSize: '13px' }}>💡 Para mejorar:</p>
-          {todosConsejos.map((c, i) => <p key={i} style={{ margin: '3px 0', color: '#bfdbfe', fontSize: '13px' }}>• {c}</p>)}
+        <div style={{ background: '#eaf5ff', border: `2px solid ${T.cielo}`, borderRadius: 18, padding: '16px 20px', marginBottom: 12, textAlign: 'left' }}>
+          <p style={{ margin: '0 0 6px', fontWeight: 800, color: T.cielo, fontSize: 14, fontFamily: "'Baloo 2', sans-serif" }}>💡 Para mejorar:</p>
+          {todosConsejos.map((c, i) => <p key={i} style={{ margin: '4px 0', color: T.texto, fontSize: 14 }}>• {c}</p>)}
         </div>
       )}
-      <Tarjeta titulo="Lo que dijiste">
-        <p style={{ margin: 0, color: C.text, fontSize: '13px', lineHeight: '1.7', fontStyle: 'italic' }}>"{data.transcripcion || '(no se detecto texto)'}"</p>
+      <Tarjeta titulo="💬 Lo que dijiste">
+        <p style={{ margin: 0, color: T.texto, fontSize: 14, lineHeight: 1.7, fontStyle: 'italic' }}>"{data.transcripcion || '(no se detecto texto)'}"</p>
       </Tarjeta>
     </div>
   )
@@ -329,7 +324,7 @@ export default function Practica() {
     if (!grabando) {
       if (wavesurferRef.current) wavesurferRef.current.destroy()
       setResultado(null); setError(null)
-      const ws = WaveSurfer.create({ container: containerRef.current, waveColor: C.blue, height: 80 })
+      const ws = WaveSurfer.create({ container: containerRef.current, waveColor: T.cielo, progressColor: T.verde, height: 80 })
       const record = ws.registerPlugin(RecordPlugin.create())
       try {
         await record.startRecording()
@@ -358,46 +353,57 @@ export default function Practica() {
     }
   }
 
+  const btnColor = analizando ? T.suave : grabando ? T.coral : T.verde
+
   return (
-    <div style={{ padding: '28px 20px', textAlign: 'center', backgroundColor: C.bg, color: C.text, minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
-      <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+    <div style={{ minHeight: '100svh', padding: '24px 18px 40px', textAlign: 'center' }}>
+      <div style={{ maxWidth: 680, margin: '0 auto' }}>
         <button onClick={() => navigate('/modos')}
-          style={{ background: 'none', border: 'none', color: C.muted, cursor: 'pointer', fontSize: '13px', marginBottom: '14px', padding: 0, display: 'block' }}>
+          style={{ background: '#fff', border: `2px solid ${T.borde}`, color: T.suave, cursor: 'pointer', fontSize: 13, fontWeight: 700, marginBottom: 16, padding: '8px 16px', borderRadius: 999 }}>
           ← Cambiar modo
         </button>
-        <h1 style={{ fontSize: '20px', margin: '0 0 4px' }}>
-          {modo === 'lectura' ? '📖 Practica de lectura' : '🎙️ Expresion oral libre'}
+
+        <h1 style={{ fontSize: 'clamp(22px,5.5vw,28px)', margin: '0 0 4px' }}>
+          {modo === 'lectura' ? '📖 Lee en voz alta' : '🎤 Habla libremente'}
         </h1>
-        <p style={{ color: C.muted, margin: '0 0 18px', fontSize: '13px' }}>
-          {modo === 'lectura' ? 'Lee el texto en voz alta' : 'Habla sobre el tema que quieras'}
+        <p style={{ color: T.suave, margin: '0 0 18px', fontWeight: 700 }}>
+          {modo === 'lectura' ? 'Lee el cuento con tu mejor voz' : 'Cuéntanos sobre el tema que quieras'}
         </p>
+
         {texto && (
-          <div style={{ backgroundColor: C.card, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '18px', marginBottom: '18px', textAlign: 'left' }}>
-            <p style={{ color: C.muted, fontSize: '11px', margin: '0 0 6px', textTransform: 'uppercase', fontWeight: 'bold' }}>{texto.titulo}</p>
-            <p style={{ color: C.text, fontSize: '16px', lineHeight: '1.8', margin: 0 }}>{texto.contenido}</p>
+          <div style={{ background: '#fff', border: `2px solid ${T.cielo}40`, borderRadius: 20, padding: 20, marginBottom: 18, textAlign: 'left', boxShadow: T.sombra }}>
+            <p style={{ color: T.cielo, fontSize: 12, margin: '0 0 8px', textTransform: 'uppercase', fontWeight: 800 }}>{texto.titulo}</p>
+            <p style={{ color: T.texto, fontSize: 'clamp(17px,4.5vw,20px)', lineHeight: 1.8, margin: 0 }}>{texto.contenido}</p>
           </div>
         )}
+
         {modo === 'libre' && !resultado && (
-          <div style={{ backgroundColor: '#1e3a5f', border: '1px solid #2563eb', borderRadius: '10px', padding: '12px 16px', marginBottom: '18px' }}>
-            <p style={{ color: '#93c5fd', margin: 0, fontSize: '13px' }}>💡 Habla sobre: tu dia, tu animal favorito, tu familia, una pelicula que viste...</p>
+          <div style={{ background: '#eaf5ff', border: `2px solid ${T.cielo}`, borderRadius: 16, padding: '12px 16px', marginBottom: 18 }}>
+            <p style={{ color: T.texto, margin: 0, fontSize: 14, fontWeight: 600 }}>💡 Puedes hablar de: tu día, tu animal favorito, tu familia, una película que viste…</p>
           </div>
         )}
-        <div ref={containerRef} style={{ margin: '0 auto 18px', width: '100%', minHeight: '80px', border: `1px solid ${C.border}`, borderRadius: '12px', overflow: 'hidden', backgroundColor: C.card }} />
+
+        {!resultado && <Lorito size={72} mensaje={grabando ? '¡Te escucho! 👂' : analizando ? 'Pensando…' : '¡Cuando quieras, empieza!'} />}
+
+        <div ref={containerRef} style={{ margin: '0 auto 18px', width: '100%', minHeight: 80, border: `2px solid ${T.borde}`, borderRadius: 18, overflow: 'hidden', background: '#fff' }} />
+
         <button onClick={manejarGrabacion} disabled={analizando}
-          style={{ padding: '16px 44px', fontSize: '17px', fontWeight: 'bold', borderRadius: '999px', border: 'none',
-            cursor: analizando ? 'not-allowed' : 'pointer',
-            backgroundColor: analizando ? '#374151' : grabando ? '#dc2626' : C.blue,
-            color: 'white', boxShadow: grabando ? '0 0 20px rgba(220,38,38,0.5)' : analizando ? 'none' : `0 0 20px rgba(99,102,241,0.4)` }}>
-          {analizando ? 'Analizando...' : grabando ? '⏹  Listo, analizar' : '🎤  Empezar a hablar'}
+          style={{ padding: '16px 44px', fontSize: 18, fontWeight: 800, borderRadius: 999, border: 'none',
+            cursor: analizando ? 'not-allowed' : 'pointer', minHeight: 60,
+            background: btnColor, color: '#fff', fontFamily: "'Baloo 2', sans-serif",
+            boxShadow: `0 5px 0 rgba(0,0,0,0.15)`, opacity: analizando ? 0.7 : 1 }}>
+          {analizando ? '⏳ Analizando…' : grabando ? '⏹  Listo, analizar' : '🎤  Empezar a hablar'}
         </button>
-        {grabando   && <p style={{ color: C.red,  marginTop: '10px', fontSize: '14px' }}>Grabando... cuando termines presiona el boton</p>}
-        {analizando && <p style={{ color: C.muted, marginTop: '14px', fontSize: '13px' }}>Procesando tu voz con IA, espera un momento...</p>}
-        {error      && <div style={{ marginTop: '14px', backgroundColor: C.redBg, border: `1px solid ${C.red}`, borderRadius: '10px', padding: '12px', color: C.red, fontSize: '13px' }}>{error}</div>}
+
+        {grabando   && <p style={{ color: T.coral,  marginTop: 12, fontSize: 14, fontWeight: 700 }}>● Grabando… cuando termines presiona el botón</p>}
+        {analizando && <p style={{ color: T.suave, marginTop: 14, fontSize: 14 }}>Procesando tu voz con la IA, espera un momentito…</p>}
+        {error      && <div style={{ marginTop: 14, background: '#fdecec', border: `2px solid ${T.coral}`, borderRadius: 14, padding: 14, color: T.err, fontSize: 14, fontWeight: 700 }}>{error}</div>}
+
         {resultado  && <Resultados data={resultado} />}
         {resultado  && (
           <button onClick={() => navigate('/historial')}
-            style={{ marginTop: '14px', padding: '10px 24px', borderRadius: '8px', border: `1px solid ${C.border}`, backgroundColor: 'transparent', color: C.muted, cursor: 'pointer', fontSize: '13px' }}>
-            Ver mi historial →
+            style={{ marginTop: 14, padding: '12px 26px', borderRadius: 999, border: `2px solid ${T.borde}`, background: '#fff', color: T.suave, cursor: 'pointer', fontSize: 14, fontWeight: 700 }}>
+            📊 Ver mi historial →
           </button>
         )}
       </div>
