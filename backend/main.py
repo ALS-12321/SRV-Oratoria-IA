@@ -1,12 +1,18 @@
 import os
-from fastapi import FastAPI
+import time
+import uuid
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from logging_config import setup_logging
+from loguru import logger
 from database import engine
 import models  # registra todos los modelos en Base
 from database import Base, SessionLocal
 from routers import auth, audio, metrics
 
+setup_logging()
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -33,6 +39,30 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(audio.router)
 app.include_router(metrics.router)
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Loguea cada request (metodo, ruta, status, duracion) con un request_id corto."""
+    rid = uuid.uuid4().hex[:8]
+    inicio = time.perf_counter()
+    try:
+        resp = await call_next(request)
+    except Exception:
+        ms = (time.perf_counter() - inicio) * 1000
+        logger.exception(f"[{rid}] {request.method} {request.url.path} -> 500 ({ms:.0f}ms)")
+        return JSONResponse(status_code=500,
+                            content={"detail": "Error interno del servidor", "request_id": rid})
+    ms = (time.perf_counter() - inicio) * 1000
+    logger.info(f"[{rid}] {request.method} {request.url.path} -> {resp.status_code} ({ms:.0f}ms)")
+    return resp
+
+
+@app.exception_handler(Exception)
+async def error_global(request: Request, exc: Exception):
+    """Captura cualquier excepcion no controlada: la registra y devuelve JSON limpio (sin stack trace)."""
+    logger.exception(f"No controlado en {request.method} {request.url.path}")
+    return JSONResponse(status_code=500, content={"detail": "Error interno del servidor"})
 
 
 @app.on_event("startup")

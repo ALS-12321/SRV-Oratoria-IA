@@ -1,4 +1,4 @@
-# Índice de PyTorch CPU-only (evita arrastrar ~2.7 GB de librerías CUDA inútiles en prod)
+# Índice de PyTorch CPU-only (evita arrastrar 2.7 GB de librerías CUDA inútiles en prod)
 --extra-index-url https://download.pytorch.org/whl/cpu
 
 # ── Core API ──────────────────────────────────────────────────────────────────
@@ -36,3 +36,4 @@ numpy==2.4.4
 # ── Utilidades ─────────────────────────────────────────────────────────────────
 python-dotenv==1.1.0
 huggingface_hub==0.34.4   # <1.0 por compatibilidad con transformers
+loguru==0.7.3             # logging estructurado + manejo global de errores
