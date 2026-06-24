@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  Chart as ChartJS, CategoryScale, LinearScale,
+  PointElement, LineElement, BarElement, Tooltip,
+} from 'chart.js'
+import { Line, Bar } from 'react-chartjs-2'
 import api from '../api'
 import { useAuth } from '../context/AuthContext'
 import { T, colorScore } from '../ui/theme'
 import { Lorito } from '../ui/kit'
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip)
 
 const BB = "'Baloo 2', sans-serif"
 
@@ -13,30 +20,37 @@ function colorStar(n) {
   return T.coral
 }
 
+/* ── Barras de PPM con Chart.js ────────────────────────────────────────────── */
 function MiniBarrasPPM({ sesiones }) {
   if (!sesiones.length) return null
-  const max = Math.max(...sesiones.map(s => s.ppm || 0), 130)
+  const datos = sesiones.slice().reverse()
+  const ppms  = datos.map(s => s.ppm || 0)
+  const colores = ppms.map(p => (p >= 80 && p <= 120 ? T.verde : p > 120 ? T.coral : T.amarillo))
+
+  const data = {
+    labels: datos.map((_, i) => i + 1),
+    datasets: [{ data: ppms, backgroundColor: colores, borderRadius: 5, maxBarThickness: 26 }],
+  }
+  const options = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} PPM` } },
+    },
+    scales: {
+      y: { beginAtZero: true, ticks: { font: { size: 9 }, color: T.suave }, grid: { color: '#f0e9da' } },
+      x: { ticks: { font: { size: 9 }, color: T.suave }, grid: { display: false } },
+    },
+  }
   return (
     <div style={{ background: '#fff', border: `2px solid ${T.borde}`, borderRadius: 18, padding: '16px 18px', marginBottom: 14, boxShadow: T.sombra }}>
       <p style={{ color: T.suave, fontSize: 11, margin: '0 0 10px', fontWeight: 800, textTransform: 'uppercase' }}>Evolucion de PPM</p>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 70 }}>
-        {sesiones.slice().reverse().map((s, i) => {
-          const ppm = s.ppm || 0
-          const h   = Math.max(4, (ppm / max) * 70)
-          const ok  = ppm >= 80 && ppm <= 120
-          return (
-            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-              <span style={{ fontSize: 9, color: T.suave }}>{ppm}</span>
-              <div style={{ width: '100%', height: `${h}px`, borderRadius: '4px 4px 0 0', backgroundColor: ok ? T.verde : ppm > 120 ? T.coral : T.amarillo }} />
-            </div>
-          )
-        })}
-      </div>
+      <div style={{ height: 90 }}><Bar data={data} options={options} /></div>
     </div>
   )
 }
 
-/* ── HU-26: gráfico de línea con tendencia (regresión lineal) ──────────────── */
+/* ── HU-26: gráfico de línea (Chart.js) con tendencia (regresión lineal) ────── */
 function GraficoLinea({ titulo, datos, color }) {
   const puntos = datos.filter(d => d.v != null)
   const cardStyle = { background: '#fff', border: `2px solid ${T.borde}`, borderRadius: 16, padding: '12px 16px', marginBottom: 10, boxShadow: T.sombra }
@@ -51,44 +65,51 @@ function GraficoLinea({ titulo, datos, color }) {
     )
   }
 
-  const W = 300, H = 90, P = 8
-  const n  = puntos.length
-  const xs = puntos.map((_, i) => P + (i / (n - 1)) * (W - 2 * P))
-  const ty = v => H - P - (Math.max(0, Math.min(100, v)) / 100) * (H - 2 * P)
-  const ys = puntos.map(p => ty(p.v))
-  const path = xs.map((x, i) => `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${ys[i].toFixed(1)}`).join(' ')
-
+  const n = puntos.length
   // Regresión lineal simple (mínimos cuadrados) sobre el índice de la práctica
   const meanX = (n - 1) / 2
   const meanY = puntos.reduce((a, p) => a + p.v, 0) / n
   let num = 0, den = 0
   puntos.forEach((p, i) => { num += (i - meanX) * (p.v - meanY); den += (i - meanX) ** 2 })
-  const slope  = den ? num / den : 0
-  const yStart = meanY + slope * (0 - meanX)
-  const yEnd   = meanY + slope * ((n - 1) - meanX)
-  const delta  = slope * (n - 1)  // cambio total estimado en el rango
+  const slope = den ? num / den : 0
+  const trend = puntos.map((_, i) => Math.max(0, Math.min(100, meanY + slope * (i - meanX))))
+  const delta = slope * (n - 1)  // cambio total estimado en el rango
   const tend = delta > 3  ? { txt: '↑ Vas mejorando',       col: T.verde }
              : delta < -3 ? { txt: '↓ Estas bajando',        col: T.coral }
              :              { txt: '→ Te mantienes estable',  col: T.amarillo }
 
+  const labels = puntos.map(p => p.t.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' }))
+  const linea = (vals, col, dash, width, pts) => ({
+    data: vals, borderColor: col, backgroundColor: col, borderDash: dash,
+    borderWidth: width, pointRadius: pts, pointBackgroundColor: col, tension: 0.35, fill: false,
+  })
+  const data = {
+    labels,
+    datasets: [
+      linea(puntos.map(p => p.v), color, [], 2.5, 3),       // serie real
+      linea(trend, tend.col, [5, 4], 1.5, 0),               // tendencia
+      linea(labels.map(() => 70), T.borde, [3, 3], 1, 0),   // meta alta
+      linea(labels.map(() => 50), T.borde, [3, 3], 1, 0),   // meta media
+    ],
+  }
+  const options = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { filter: ctx => ctx.datasetIndex === 0, callbacks: { label: ctx => `${ctx.parsed.y} pts` } },
+    },
+    scales: {
+      y: { min: 0, max: 100, ticks: { stepSize: 25, font: { size: 9 }, color: T.suave }, grid: { color: '#f0e9da' } },
+      x: { ticks: { font: { size: 9 }, color: T.suave, autoSkip: true, maxTicksLimit: 4 }, grid: { display: false } },
+    },
+  }
   return (
     <div style={cardStyle}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
         <p style={tituloStyle}>{titulo}</p>
         <span style={{ fontSize: 12, fontWeight: 800, color: tend.col }}>{tend.txt}</span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block' }}>
-        {[50, 70].map(g => (
-          <line key={g} x1={P} y1={ty(g)} x2={W - P} y2={ty(g)} stroke={T.borde} strokeWidth="1" strokeDasharray="3 3" />
-        ))}
-        <line x1={P} y1={ty(yStart)} x2={W - P} y2={ty(yEnd)} stroke={tend.col} strokeWidth="1.5" strokeDasharray="5 4" opacity="0.7" />
-        <path d={path} fill="none" stroke={color} strokeWidth="2.5" />
-        {xs.map((x, i) => <circle key={i} cx={x} cy={ys[i]} r="3" fill={color} />)}
-      </svg>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: T.suave, marginTop: 2 }}>
-        <span>{puntos[0].t.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</span>
-        <span>{puntos[n - 1].t.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</span>
-      </div>
+      <div style={{ height: 120 }}><Line data={data} options={options} /></div>
     </div>
   )
 }
