@@ -11,6 +11,10 @@ WHISPER_COMPUTE_TYPE = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
 WHISPER_MODEL_LIVE   = os.getenv("WHISPER_MODEL_LIVE", "small")
 WHISPER_MODEL_FINAL  = os.getenv("WHISPER_MODEL_FINAL", "medium")  # plan Hobby 8GB; alineado con build.sh
 
+# ── Audio ─────────────────────────────────────────────────────────────────────
+# Filtros anti-ruido del aula rural (paso-alto + puerta de ruido). Charter S04.
+AUDIO_FILTERS_ENABLED = os.getenv("AUDIO_FILTERS_ENABLED", "1") not in ("0", "false", "False")
+
 # ── Base de datos ─────────────────────────────────────────────────────────────
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./srv_dev.db")
 
