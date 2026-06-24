@@ -299,7 +299,11 @@ function Resultados({ data }) {
           <div style={{ fontSize: 34, lineHeight: 1 }}>🦜</div>
           <div>
             <p style={{ margin: '0 0 4px', fontWeight: 800, color: T.verdeD, fontSize: 14, fontFamily: "'Baloo 2', sans-serif" }}>Lorito te dice:</p>
-            <p style={{ margin: 0, color: T.texto, fontSize: 15, lineHeight: 1.5 }}>{data.consejo_ia}</p>
+            <p style={{ margin: '0 0 8px', color: T.texto, fontSize: 15, lineHeight: 1.5 }}>{data.consejo_ia}</p>
+            <button onClick={() => hablar(data.consejo_ia)}
+              style={{ padding: '7px 16px', borderRadius: 999, border: `2px solid ${T.verde}`, background: '#fff', color: T.verdeD, cursor: 'pointer', fontSize: 13, fontWeight: 700 }}>
+              🔊 Escuchar
+            </button>
           </div>
         </div>
       )}
@@ -380,7 +384,8 @@ export default function Practica() {
         try {
           const res = await api.post('/audio/analizar', fd)
           setResultado(res.data)
-          hablar(res.data.score_global.mensaje)
+          // Lee el consejo de la IA (Claude) si existe; si no, el mensaje del puntaje.
+          hablar(res.data.consejo_ia || res.data.score_global.mensaje)
         } catch (err) {
           if (err.response?.status === 401) { navigate('/login'); return }
           setError('Error al analizar. Verifica que el servidor este encendido.')
