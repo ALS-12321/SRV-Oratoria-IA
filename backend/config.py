@@ -23,6 +23,15 @@ SUPABASE_URL          = os.getenv("SUPABASE_URL", "")
 SUPABASE_SERVICE_KEY  = os.getenv("SUPABASE_SERVICE_KEY", "")
 SUPABASE_AUDIO_BUCKET = os.getenv("SUPABASE_AUDIO_BUCKET", "audios")
 
+# ── IA generativa (HU-25) ─────────────────────────────────────────────────────
+# Consejo personalizado con Claude Haiku a partir de los SCORES (solo números:
+# nunca se envía la voz ni la transcripción del menor). DESACTIVADA por defecto:
+# requiere ANTHROPIC_API_KEY (cuenta de API, no la suscripción Pro) y tiene costo
+# por uso. Si está apagada o falla, se usan los consejos por reglas (fallback).
+IA_GENERATIVA_ENABLED = os.getenv("IA_GENERATIVA_ENABLED", "0") in ("1", "true", "True")
+ANTHROPIC_API_KEY     = os.getenv("ANTHROPIC_API_KEY", "")
+IA_MODEL              = os.getenv("IA_MODEL", "claude-haiku-4-5")
+
 # ── Base de datos ─────────────────────────────────────────────────────────────
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./srv_dev.db")
 

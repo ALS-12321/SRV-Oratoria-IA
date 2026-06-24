@@ -268,6 +268,15 @@ function Resultados({ data }) {
   return (
     <div style={{ maxWidth: 680, margin: '18px auto', textAlign: 'center' }}>
       <ScoreGlobal data={data} />
+      {data.consejo_ia && (
+        <div style={{ background: '#f3fbf6', border: `2px solid ${T.verde}`, borderRadius: 20, padding: '16px 20px', marginBottom: 14, textAlign: 'left', display: 'flex', gap: 12, alignItems: 'flex-start', boxShadow: T.sombra }}>
+          <div style={{ fontSize: 34, lineHeight: 1 }}>🦜</div>
+          <div>
+            <p style={{ margin: '0 0 4px', fontWeight: 800, color: T.verdeD, fontSize: 14, fontFamily: "'Baloo 2', sans-serif" }}>Lorito te dice:</p>
+            <p style={{ margin: 0, color: T.texto, fontSize: 15, lineHeight: 1.5 }}>{data.consejo_ia}</p>
+          </div>
+        </div>
+      )}
       {data.lectura && (
         <Tarjeta titulo="📖 Lectura — Fidelidad" accentColor={colorLec}>
           <div style={{ textAlign: 'center', margin: '4px 0 8px' }}>

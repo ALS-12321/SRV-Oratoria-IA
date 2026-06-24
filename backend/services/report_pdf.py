@@ -186,6 +186,13 @@ def build_session_report(sesion, d1, d2, d3, usuario, score_global=None) -> byte
             elems.append(Paragraph(f"• {c}", normal))
         elems.append(Spacer(1, 12))
 
+    # Mensaje de ánimo generado por IA (HU-25), si existe
+    consejo_ia = fb1.get("consejo_ia")
+    if consejo_ia:
+        elems.append(Paragraph("Mensaje de ánimo", h2))
+        elems.append(Paragraph(consejo_ia, normal))
+        elems.append(Spacer(1, 12))
+
     # Transcripción
     if d1 and d1.transcripcion:
         elems.append(Paragraph("Transcripción", h2))

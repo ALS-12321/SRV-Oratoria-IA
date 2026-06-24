@@ -16,6 +16,7 @@ from services.dimension1 import transcribe, calculate_ppm, detect_pauses, analyz
 from services.dimension2 import detect_muletillas, calc_ttr, calc_coherencia, generate_feedback_d2
 from services.dimension3 import calc_expresividad
 from services.scoring import calc_score_global
+from services.ia_consejos import generar_consejo_ia
 from schemas.audio import TextoLecturaResponse
 
 router = APIRouter(prefix="/audio", tags=["audio"])
@@ -86,6 +87,16 @@ async def analizar_fluidez(
         score_d3=feedback_d3.get("score_d3", 0.0),
     )
 
+    # ── HU-25: consejo con IA generativa (solo números; None si desactivado) ────
+    consejo_ia = generar_consejo_ia({
+        "score_d1": feedback_d1.get("score_d1"),
+        "score_d2": feedback_d2.get("score_d2"),
+        "score_d3": feedback_d3.get("score_d3"),
+        "ppm": ppm_result["ppm"],
+        "bloqueos": pauses_result["long_pauses"],
+        "muletillas": muletillas_result["muletillas_count"],
+    })
+
     # ── Guardar en DB ─────────────────────────────────────────────────────────
     sesion = Sesion(usuario_id=current_user.id, modo=modo, texto_id=texto_id)
     db.add(sesion)
@@ -97,6 +108,8 @@ async def analizar_fluidez(
         fb_d1_json["lectura"] = lectura_result
     if audio_path:
         fb_d1_json["audio_path"] = audio_path
+    if consejo_ia:
+        fb_d1_json["consejo_ia"] = consejo_ia
     resultado_d1 = ResultadoD1(
         sesion_id         = sesion.id,
         transcripcion     = transcript,
@@ -173,4 +186,5 @@ async def analizar_fluidez(
             "breakdown":        feedback_d3["breakdown"],
         },
         "score_global": score_global,
+        "consejo_ia": consejo_ia,
     }
