@@ -412,7 +412,7 @@ export default function Practica() {
       <div style={{ maxWidth: 680, margin: '0 auto' }}>
         <button onClick={() => navigate('/modos')}
           style={{ background: '#fff', border: `2px solid ${T.borde}`, color: T.suave, cursor: 'pointer', fontSize: 13, fontWeight: 700, marginBottom: 16, padding: '8px 16px', borderRadius: 999 }}>
-          ← Cambiar modo
+          Cambiar modo
         </button>
 
         <h1 style={{ fontSize: 'clamp(22px,5.5vw,28px)', margin: '0 0 4px' }}>

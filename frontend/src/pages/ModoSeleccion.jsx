@@ -58,7 +58,7 @@ export default function ModoSeleccion() {
             {user?.grado && <p style={{ color: T.suave, margin: 0, fontWeight: 700 }}>{user.grado} {user.seccion || ''}</p>}
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <PillBtn onClick={() => navigate('/historial')}>📊 Mi historial</PillBtn>
+            <PillBtn onClick={() => navigate('/historial')}>Mi historial</PillBtn>
             <PillBtn onClick={logout}>Salir</PillBtn>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function ModoSeleccion() {
 
         {paso === 'lectura' && (
           <div className="aparecer">
-            <PillBtn onClick={() => { setPaso('modos'); setTextoSeleccionado(null) }}>← Volver</PillBtn>
+            <PillBtn onClick={() => { setPaso('modos'); setTextoSeleccionado(null) }}>Volver</PillBtn>
             <h2 style={{ margin: '16px 0 4px' }}>Elige un cuento 📖</h2>
             <p style={{ color: T.suave, margin: '0 0 18px' }}>Lo leerás en voz alta cuando estés listo</p>
 

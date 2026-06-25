@@ -125,7 +125,7 @@ export default function Login() {
           )}
 
           <Boton type="submit" disabled={cargando} color={T.verde}>
-            {cargando ? 'Cargando…' : modo === 'login' ? '🎤  ¡Entrar!' : '🌟  Crear mi cuenta'}
+            {cargando ? 'Cargando…' : modo === 'login' ? '¡Entrar!' : '🌟  Crear mi cuenta'}
           </Boton>
         </form>
       </Tarjeta>

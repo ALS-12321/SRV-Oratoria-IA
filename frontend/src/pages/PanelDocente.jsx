@@ -44,7 +44,7 @@ function DetalleAlumno({ alumnoId, onVolver }) {
 
   return (
     <div className="aparecer">
-      <PillBtn onClick={onVolver}>← Volver a la lista</PillBtn>
+      <PillBtn onClick={onVolver}>Volver a la lista</PillBtn>
       <h2 style={{ margin: '14px 0 2px' }}>{a.nombre} {a.apellido}</h2>
       <p style={{ color: T.suave, margin: '0 0 16px', fontWeight: 700 }}>{a.grado || ''} {a.seccion || ''} · {data.sesiones.length} prácticas</p>
 

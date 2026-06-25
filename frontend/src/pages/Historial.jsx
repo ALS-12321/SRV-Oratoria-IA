@@ -188,7 +188,7 @@ export default function Historial() {
           </div>
           <button onClick={() => navigate('/modos')}
             style={{ padding: '9px 16px', borderRadius: 999, border: `2px solid ${T.borde}`, background: '#fff', color: T.suave, cursor: 'pointer', fontSize: 13, fontWeight: 700 }}>
-            ← Volver
+            Volver
           </button>
         </div>
 
